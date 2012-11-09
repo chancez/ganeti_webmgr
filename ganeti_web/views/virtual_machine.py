@@ -98,7 +98,12 @@ class VMListView(LoginRequiredMixin, PagedListView):
         user = self.request.user
         context = super(VMListView, self).get_context_data(object_list=kwargs["object_list"])
         context["can_create"] = (user.is_superuser or
-                                 user.has_any_perms(Cluster, ["create_vm"]))
+                                user.has_any_perms(Cluster, ["create_vm"]))
+        if "order_by" in self.request.GET:
+            context["order"] = self.request.GET["order_by"]
+        else:
+            context["order"] = "hostname"
+
         return context
 
 class VMListTableView(VMListView):
