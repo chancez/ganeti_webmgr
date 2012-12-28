@@ -602,7 +602,8 @@ class VirtualMachine(CachedClusterObject):
                               on_delete=models.SET_NULL)
     virtual_cpus = models.IntegerField(default=-1)
     disk_size = models.IntegerField(default=-1)
-    ram = models.IntegerField(default=-1)
+    maxmem = models.IntegerField(default=-1)
+    minmem = models.IntegerField(default=-1)
     cluster_hash = models.CharField(max_length=40, editable=False)
     operating_system = models.CharField(max_length=128)
     status = models.CharField(max_length=14)
@@ -700,7 +701,12 @@ class VirtualMachine(CachedClusterObject):
         data = super(VirtualMachine, cls).parse_persistent_info(info)
 
         # Parse resource properties
-        data['ram'] = info['beparams']['memory']
+        if requires_maxmem(info['cluster']):
+            data['maxmem'] = info['beparams']['maxmem']
+            data['minmem'] = info['beparams']['minmem']
+        else:
+            data['maxmem'] = info['beparams']['memory']
+            data['minmem'] = info['beparams']['memory']
         data['virtual_cpus'] = info['beparams']['vcpus']
         # Sum up the size of each disk used by the VM
         disk_size = 0
