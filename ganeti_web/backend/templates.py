@@ -77,14 +77,22 @@ def template_to_instance(template, hostname, owner):
     """
 
     cluster = template.cluster
-    memory = template.memory
     vcpus = template.vcpus
     disk_size = template.disks[0]["size"]
 
     beparams = {
-        "memory": memory,
         "vcpus": template.vcpus,
     }
+
+    if requires_maxmem(cluster):
+        maxmem = template.maxmem
+        minmem = template.minmem
+        beparams["maxmem"] = maxmem
+        beparams["minmem"] = minmem
+    else:
+        memory = template.memory
+        beparams["memory"] = memory
+
 
     kwargs = {
         "os": template.os,
