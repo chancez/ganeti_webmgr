@@ -682,12 +682,16 @@ class VMWizardBasicsForm(Form):
                     MaxValueValidator(v))
                 v = cluster.info["ipolicy"]["max"]["memory-size"]
                 self.fields["memory"].validators.append(MaxValueValidator(v))
+                if requires_maxmem(cluster):
+                    self.fields["minmem"].validators.append(MaxValueValidator(v))
             if "min" in cluster.info["ipolicy"]:
                 v = cluster.info["ipolicy"]["min"]["disk-size"]
                 self.fields["disk_size"].validators.append(
                     MinValueValidator(v))
                 v = cluster.info["ipolicy"]["min"]["memory-size"]
                 self.fields["memory"].validators.append(MinValueValidator(v))
+                if requires_maxmem(cluster):
+                    self.fields["minmem"].validators.append(MinValueValidator(v))
 
     def _configure_for_template(self, template):
         if not template:
@@ -698,6 +702,15 @@ class VMWizardBasicsForm(Form):
         self.fields["memory"].initial = template.memory
         self.fields["disk_template"].initial = template.disk_template
         # XXX disk size
+
+    def clean(self):
+        if self.cleaned_data.get("minmem"):
+            if (self.cleaned_data.get("memory") <
+                 self.cleaned_data.get("minmem")):
+                msg = ["Maximum RAM must be equal to or greater than the Minimum RAM"]
+                self.errors["memory"] = self.error_class(msg)
+
+        return self.cleaned_data
 
 
 class VMWizardAdvancedForm(Form):
