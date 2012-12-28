@@ -982,7 +982,11 @@ class VMWizardView(LoginRequiredMixin, CookieWizardView):
         template_name = forms[1].cleaned_data["template_name"]
 
         template.cluster = cluster
-        template.memory = forms[2].cleaned_data["memory"]
+        if requires_maxmem(cluster):
+            template.maxmem = forms[2].cleaned_data["memory"]
+            template.minmem = forms[2].cleaned_data["minmem"]
+        else:
+            template.memory = forms[2].cleaned_data["memory"]
         template.vcpus = forms[2].cleaned_data["vcpus"]
         template.disk_template = forms[2].cleaned_data["disk_template"]
 
