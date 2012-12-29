@@ -1335,8 +1335,8 @@ class Cluster(CachedClusterObject):
         used = total - free
         values = self.virtual_machines \
             .filter(status='running') \
-            .exclude(ram=-1).order_by() \
-            .aggregate(used=Sum('ram'))
+            .exclude(maxmem=-1).order_by() \
+            .aggregate(used=Sum('maxmem'))
 
         if values.get("used") is None:
             allocated = 0
@@ -1665,13 +1665,13 @@ class ClusterUser(models.Model):
         #
         # XXX - quotes must be used in this order.  postgresql quirk
         if only_running:
-            sum_ram = SumIf('ram', condition="status='running'")
+            sum_ram = SumIf('maxmem', condition="status='running'")
             sum_vcpus = SumIf('virtual_cpus', condition="status='running'")
         else:
-            sum_ram = Sum('ram')
+            sum_ram = Sum('maxmem')
             sum_vcpus = Sum('virtual_cpus')
 
-        base = base.exclude(ram=-1, disk_size=-1, virtual_cpus=-1)
+        base = base.exclude(maxmem=-1, disk_size=-1, virtual_cpus=-1)
 
         if cluster:
             base = base.filter(cluster=cluster)
@@ -1681,8 +1681,8 @@ class ClusterUser(models.Model):
             # repack with zeros instead of Nones
             if result['disk'] is None:
                 result['disk'] = 0
-            if result['ram'] is None:
-                result['ram'] = 0
+            if result['maxmem'] is None:
+                result['maxmem'] = 0
             if result['virtual_cpus'] is None:
                 result['virtual_cpus'] = 0
             return result
