@@ -25,6 +25,8 @@ machinery.
 
 from object_log.models import LogItem
 
+from ganeti_web.caps import requires_maxmem
+
 from ganeti_web.models import Job, VirtualMachine, VirtualMachineTemplate
 
 log_action = LogItem.objects.log_action
@@ -110,7 +112,12 @@ def template_to_instance(template, hostname, owner):
 
     vm.cluster = cluster
     vm.hostname = hostname
-    vm.ram = memory
+    if requires_maxmem(cluster):
+        vm.maxmem = maxmem
+        vm.minmem = minmem
+    else:
+        vm.maxmem = memory
+        vm.minmem = memory
     vm.virtual_cpus = vcpus
     vm.disk_size = disk_size
 
