@@ -701,13 +701,14 @@ class VirtualMachine(CachedClusterObject):
         data = super(VirtualMachine, cls).parse_persistent_info(info)
 
         # Parse resource properties
-        if requires_maxmem(info['cluster']):
+        if info['beparams']['maxmem']:
             data['maxmem'] = info['beparams']['maxmem']
             data['minmem'] = info['beparams']['minmem']
         else:
             data['maxmem'] = info['beparams']['memory']
             data['minmem'] = info['beparams']['memory']
         data['virtual_cpus'] = info['beparams']['vcpus']
+
         # Sum up the size of each disk used by the VM
         disk_size = 0
         for disk in info['disk.sizes']:
