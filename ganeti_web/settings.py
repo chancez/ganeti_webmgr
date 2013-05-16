@@ -92,6 +92,7 @@ INSTALLED_APPS = (
     'muddle_users',
     'include_strip_tag',
     'django_tables2',
+    'gunicorn',
 )
 
 # The model that contains extra user profile stuff.
