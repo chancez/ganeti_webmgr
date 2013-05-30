@@ -1,7 +1,4 @@
 # activate virtual environment
-activate_this = '%s/bin/activate_this.py' % "."
-execfile(activate_this, dict(__file__=activate_this))
-
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
@@ -10,4 +7,3 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
-application = newrelic.agent.wsgi_application()(application)
