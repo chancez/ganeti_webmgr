@@ -1,3 +1,4 @@
+gunicorn
 Twisted>=11.0.0
 django-fields
 django-haystack==1.2.1
